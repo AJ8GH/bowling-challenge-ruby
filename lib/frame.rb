@@ -2,10 +2,11 @@
 class Frame
   TOTAL_PINS = 10
 
-  attr_reader :rolls, :bonus
+  attr_reader :bonus_count
 
   def initialize
     @bonus = 0
+    @bonus_count = 0
     @rolls = []
     @final = false
     @remaining_pins = TOTAL_PINS
@@ -22,6 +23,8 @@ class Frame
     self.remaining_pins -= pins
     replace_pins if final? && !over?
     rolls << pins
+    self.bonus_count += 1 if spare?
+    self.bonus_count += 2 if strike?
   end
 
   def over?
@@ -39,6 +42,7 @@ class Frame
   end
 
   def add_bonus(pins)
+    self.bonus_count -= 1
     self.bonus += pins
   end
 
@@ -48,8 +52,9 @@ class Frame
 
   private
 
-  attr_writer :bonus
-  attr_accessor :remaining_pins
+  attr_reader :rolls
+  attr_writer :bonus_count
+  attr_accessor :remaining_pins, :bonus
 
 
   def final?

@@ -1,6 +1,6 @@
 # tracks frames and handles bonus logic
 class Game
-  attr_reader :current_frame, :frames, :score_board
+  attr_reader :frames, :score_board
 
   def initialize(args = {})
     @frame_class = args[:frame_class] || Frame
@@ -25,7 +25,7 @@ class Game
   private
 
   attr_reader :frame_class
-  attr_writer :current_frame
+  attr_accessor :current_frame
 
   def finish_frame
     frames << current_frame
@@ -40,21 +40,6 @@ class Game
   end
 
   def add_bonus(pins)
-    frames.last.add_bonus(pins) if last_frame_bonus?
-    return if frames.count < 2
-
-    frames[-2].add_bonus(pins) if second_strike_bonus?
-  end
-
-  def last_frame_bonus?
-    (frames.last.spare? || frames.last.strike?) && rolls_since <= 3
-  end
-
-  def second_strike_bonus?
-    frames[-2].strike? && rolls_since <= 2
-  end
-
-  def rolls_since
-    (frames.last.rolls + current_frame.rolls).count
+    frames.each { |frame| frame.add_bonus(pins) unless frame.bonus_count.zero? }
   end
 end
